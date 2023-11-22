@@ -1,3 +1,11 @@
+<?php include('../config/config.php') ?>
+<?php
+session_start();
+if ($_SESSION['username'] == null) {
+  header("location:" . base_url . "views/auth/login.php");
+}
+
+?>
 <!doctype html>
 <html lang="en">
 
@@ -10,7 +18,6 @@
 </head>
 
 <body>
-
   <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
     <div class="container">
       <a class="navbar-brand" href="#">SIMPLE CRUD AHMAD</a>
@@ -20,107 +27,55 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="#">Users</a>
+            <a class="nav-link" href="<?= base_url ?>index.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Items</a>
+            <a class="nav-link" href="<?= base_url ?>views/users/users.php">Users</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="<?= base_url ?>views/items/items.php">Items</a>
           </li>
         </ul>
+      </div>
+      <div class="float-end">
+        <div class="dropdown">
+          <button class="btn btn-sm bg-transparent text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <?= $_SESSION['username'] ?>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" id="btn_logout">Logout</a></li>
+          </ul>
+        </div>
       </div>
     </div>
   </nav>
 
-  <div class="container">
-    <div class="row mt-5">
-      <div class="col-lg-4">
-        <div class="card shadow p-3">
-          <h3 class="text-center">Input Akun</h3>
-          <hr>
-          <form action="../controller/Controller.php" method="post">
-            <input type="hidden" name="rute" id="rute" value="tambah_user">
-            <div class="form-group mb-3">
-              <label for="username">Username</label>
-              <input type="text" class="form-control" name="username" id="username">
-            </div>
-            <div class="form-group mb-3">
-              <label for="password">Password</label>
-              <input type="password" class="form-control" name="password" id="password">
-            </div>
-            <div class="form-group mb-3">
-              <label for="roles">Roles</label>
-              <select name="roles" id="roles" class="form-control">
-                <option value="Admin">Administrator</option>
-                <option value="Petugas">Petugas</option>
-              </select>
-            </div>
-            <div class="d-grid">
-              <button class="btn btn-success" name="tambah">Submit</button>
-            </div>
-          </form>
-        </div>
-      </div>
-      <div class="col-lg-8">
-        <div class="card shadow p-3">
-          <h4 class="text-center">Tabel Users</h4>
-          <hr>
-          <table class="table table-stripped">
-            <thead class="table-dark">
-              <tr>
-                <th>#</th>
-                <th>Username</th>
-                <th>Role</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="canvas">
-            </tbody>
-          </table>
-        </div>
-      </div>
+  <div class="d-grid justify-content-center align-items-center" style="height: 80vh;">
+    <div class="col-md">
+      <h1>Selamat datang <?= $_SESSION['username'] ?>!</h1>
     </div>
   </div>
 
   <script>
-    $(document).ready(function() {
-      $.ajax({
-        url: '../controller/Controller.php',
-        method: 'POST',
-        data: {
-          rute: 'tampil_data_user',
-        },
-        success: function(res) {
-          $('#canvas').html(res)
-        },
-        error: function(err) {
-          console.error(err)
-        }
-      })
-
-    })
-
-    function handleEdit(x) {
-      window.location.href = `http://localhost:8000/views/edit_user.php?id=${x}`
-    }
-
-
-    function handleDelete(x) {
-      if (confirm("Apakah anda yakin ingin menghapus data ini?") == true) {
+    $('#btn_logout').click(function() {
+      if (confirm('Apakah anda ingin logout?')) {
         $.ajax({
-          url: '../controller/Controller.php',
+          url: `<?= base_url ?>controller/LoginController.php`,
           method: 'POST',
           data: {
-            rute: 'hapus_data_user',
-            id: x
+            rute: 'logout'
           },
           success: function(res) {
-            location.reload()
+            window.location = `<?= base_url ?>views/auth/login.php`
           },
           error: function(err) {
             console.error(err)
           }
         })
+      } else {
+        // Nothing
       }
-    }
+    })
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
